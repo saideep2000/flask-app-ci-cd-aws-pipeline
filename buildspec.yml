@@ -1,0 +1,22 @@
+version: 0.2
+
+# env:
+#   parameter-store:
+#     key: "value"
+#     key: "value"
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    pre_build:
+      commands: 
+        - pip install -r requirements.txt
+    build:
+      commands:
+        # - cd files
+        - echo "Building Docker Image"
+        - docker build -t "<>"
+        - docker push <>
+    post_build:
+      commands:
+        - echo "Build is Succesful"
