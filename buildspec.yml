@@ -1,22 +1,26 @@
 version: 0.2
 
-# env:
-#   parameter-store:
-#     key: "value"
-#     key: "value"
+env:
+  parameter-store:
+    DOCKER_REGISTRY_USERNAME: /simpleflaskapp-cicd/docker-credentials/username
+    DOCKER_REGISTRY_PASSWORD: /simpleflaskapp-cicd/docker-credentials/password
+    DOCKER_REGISTRY_URL: /simpleflaskapp-cicd/docker-registry/url
+
 phases:
   install:
-    runtime-versions:
-      python: 3.11
-    pre_build:
-      commands: 
-        - pip install -r requirements.txt
-    build:
-      commands:
-        # - cd files
-        - echo "Building Docker Image"
-        - docker build -t "<>"
-        - docker push <>
-    post_build:
-      commands:
-        - echo "Build is Succesful"
+    commands:
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt
+  pre_build:
+    commands:
+      - echo "Preparing to build Docker image..."
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin "$DOCKER_REGISTRY_URL"
+  build:
+    commands:
+      - echo "Building Docker image..."
+      - docker build -t "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/simple-python-flask-app:latest" .
+      - echo "Pushing Docker image..."
+      - docker push "$DOCKER_REGISTRY_URL/$DOCKER_REGISTRY_USERNAME/simple-python-flask-app:latest"
+  post_build:
+    commands:
+      - echo "Build and push successful"
